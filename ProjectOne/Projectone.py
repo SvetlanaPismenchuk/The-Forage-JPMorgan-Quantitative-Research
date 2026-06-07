@@ -1,4 +1,5 @@
 from datetime import datetime
+import numpy as np
 
 def extract_data("Nat_Gas.csv"):
     dates = []
@@ -27,7 +28,7 @@ def extract_data("Nat_Gas.csv"):
     return days, base
 
 
-    import numpy as np
+   
 
 def fit_model(days, prices):
     coeffs = np.polyfit(days, prices, 1)  # linear trend

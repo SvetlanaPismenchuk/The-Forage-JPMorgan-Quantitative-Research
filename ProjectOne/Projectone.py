@@ -28,8 +28,53 @@ def extract_data("Nat_Gas.csv"):
     return days, base
 
 
-   
 
 def fit_model(days, prices):
     coeffs = np.polyfit(days, prices, 1)  # linear trend
     return coeffs
+
+
+def price_storage_contract(
+        injection_dates,
+        withdrawal_dates,
+        volumes,
+        get_price,
+        max_capacity,
+        inject_rate,
+        withdraw_rate,
+        storage_cost_per_day):
+
+    total_profit = 0
+    inventory = 0
+
+    for inj_date, wd_date, volume in zip(
+            injection_dates,
+            withdrawal_dates,
+            volumes):
+
+        volume = min(volume, inject_rate)
+        volume = min(volume, withdraw_rate)
+
+        if inventory + volume > max_capacity:
+            raise ValueError("Storage capacity exceeded")
+
+        buy_price = get_price(inj_date)
+        sell_price = get_price(wd_date)
+
+        days = (wd_date - inj_date).days
+
+        storage_cost = (
+            volume *
+            storage_cost_per_day *
+            days
+        )
+
+        profit = (
+            volume * sell_price
+            - volume * buy_price
+            - storage_cost
+        )
+
+        total_profit += profit
+
+    return total_profit
